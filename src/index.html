@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>robinhoodtrenches — live fomo.family trader tape</title>
+<meta name="description" content="Live tape of every buy and sell by the top fomo.family traders on Robinhood Chain, with P/L and hit rates per trader.">
+<link rel="preload" href="fonts/jbm-5.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/jetbrains-mono.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bar">
+  <span class="bar-name">robinhoodtrenches</span>
+  <span id="clock">--:--:--</span>
+  <span class="sess" id="session" title="what the tracked wallets have traded since you opened this page">session $0 · 0 fills · 0s</span>
+  <a class="credit" href="https://x.com/Degenerate_DeFi" target="_blank" rel="noopener noreferrer">made with &lt;3 by degenerate_defi</a>
+  <span class="bar-keys">
+    <span class="kk" data-key="1"><span class="k">1</span>1h</span>
+    <span class="kk" data-key="2"><span class="k">2</span>24h</span>
+    <span class="kk" data-key="3"><span class="k">3</span>7d</span>
+    <span class="kk" data-key="4"><span class="k">4</span>30d</span>
+    <span class="kk" data-key="5"><span class="k">5</span>all</span>
+    <span class="kk" data-key="s"><span class="k">s</span>sound:<span id="k-sound">on (click)</span></span>
+    <span class="kk" data-key="t"><span class="k">t</span>stocks:<span id="k-stocks">off</span></span>
+    <span class="kk" data-key="f"><span class="k">f</span>follow:<span id="k-follow">on</span></span>
+    <span class="kk desk" data-key="/"><span class="k">/</span>filter</span>
+    <span class="kk" data-key="r"><span class="k">r</span>rpc:<span id="k-rpc">public</span></span>
+  </span>
+</div>
+<div class="callout" id="big" hidden><span id="big-text"></span></div>
+
+<pre class="ro" id="ro">connecting…</pre>
+
+<div class="sec">LIVE TAPE <span class="secn">every buy and sell by the tracked wallets, as it lands</span>
+  <span class="tools"><input id="tape-filter" placeholder="filter handle / token" autocomplete="off" spellcheck="false"></span></div>
+<div class="tw">
+<table class="t" id="tape-table">
+<thead><tr><th>time</th><th>side</th><th>token</th><th class="n">size usd</th><th class="n m-hide">price</th><th class="n m-hide">tokens</th><th>trader</th><th class="n m-hide">followers</th><th>fomo profile</th><th>dexscreener</th><th class="m-hide">tx</th></tr></thead>
+<tbody id="tape"></tbody>
+</table>
+</div>
+
+<div class="sec">CLOSED TRADES <span class="secn">positions taken all the way back to flat · one row per position, not per sell</span></div>
+<div class="tw short">
+<table class="t" id="closed-table">
+<thead><tr><th>closed</th><th>trader</th><th class="n m-hide">followers</th><th>token</th><th class="n m-hide">paid in</th><th class="n m-hide">got out</th><th class="n">made</th><th class="n">return</th><th class="n">held</th><th class="n m-hide">fills</th><th>fomo profile</th><th>dexscreener</th></tr></thead>
+<tbody id="closed"></tbody>
+</table>
+</div>
+
+<div class="sec">TRADERS <span class="secn">who is actually making money</span>
+  <span class="tools">
+    <select id="lb-sort" aria-label="sort">
+      <option value="realized_pnl">sort: p/l on sells</option>
+      <option value="unrealized_pnl">sort: p/l on open bags</option>
+      <option value="net_pnl">sort: total p/l</option>
+      <option value="win_rate">sort: win rate</option>
+      <option value="volume">sort: volume</option>
+      <option value="fills">sort: fills</option>
+      <option value="followers">sort: followers</option>
+    </select>
+    <label class="chk"><input type="checkbox" id="lb-active" checked> traded this window only</label>
+  </span></div>
+<div class="tw">
+<table class="t" id="board-table">
+<thead><tr><th class="n">#</th><th>handle</th><th class="n m-hide">followers</th><th class="n m-hide">fills</th><th class="n m-hide">volume</th><th class="n" title="profit or loss on everything sold, incl. partial exits">p/l on sells</th><th class="n" title="on bags still held, at current price">p/l on open bags</th><th class="n">total p/l</th><th class="n" title="share of fully-closed positions that made money">won</th><th class="n" title="positions taken from flat to long and back">closed</th><th class="n m-hide">best</th><th class="n m-hide">worst</th><th class="m-hide">evm wallet</th><th>fomo profile</th><th class="m-hide">blockscout</th></tr></thead>
+<tbody id="board"></tbody>
+</table>
+</div>
+
+<div class="sec" id="tabbar">
+  <span class="tab on" data-tab="tokens">TOKENS BEING BOUGHT</span>
+  <span class="tab" data-tab="flow">WHO FOLLOWED WHO</span>
+  <span class="tab" data-tab="radar">FRESH POOLS</span>
+</div>
+<div class="tw">
+  <div id="tab-tokens" class="pane"></div>
+  <div id="tab-flow" class="pane" hidden></div>
+  <div id="tab-radar" class="pane" hidden></div>
+</div>
+
+<pre class="ro foot" id="foot">—</pre>
+<div class="credit-foot">made with &lt;3 by <a href="https://x.com/Degenerate_DeFi" target="_blank" rel="noopener noreferrer">degenerate_defi</a></div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modal-close" aria-label="close">[esc] close</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script src="chart.js"></script>
+</body>
+</html>

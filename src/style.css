@@ -1,0 +1,199 @@
+/* robinhoodtrenches — a terminal you logged into. Text on black. No boxes. */
+
+:root {
+  --bg: #000;
+  --fg: #d8d8d8;          /* headers, plain text */
+  --dim: #7a7a7a;
+  --dimmer: #4a4a4a;
+  --green: #5ff05f;       /* data, buys, profit */
+  --green-hi: #a6ffa6;
+  --red: #ff5c5c;         /* sells, losses */
+  --red-hi: #ffa0a0;
+  --cyan: #5fd7ff;        /* section titles, links */
+  --yellow: #e5e500;      /* inverse status bar */
+  --magenta: #ff79ff;
+  --mono: "JetBrains Mono", Menlo, ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--mono); font-size: 12px; line-height: 1.4;
+  font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+body { padding: 0 0 24px; }
+
+a { color: var(--cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.up { color: var(--green); }
+.down { color: var(--red); }
+.flat { color: var(--dim); }
+.dim { color: var(--dim); }
+pre { margin: 0; font: inherit; white-space: pre-wrap; }
+
+/* top bar: inverse video, like a curses status line */
+.bar { background: var(--fg); color: #000; padding: 1px 8px; display: flex; gap: 14px;
+       align-items: baseline; white-space: nowrap; overflow: hidden; }
+.bar-name { font-weight: 700; }
+.bar-keys { margin-left: auto; color: #222; }
+.k { display: inline-block; padding: 0 3px; margin-right: 2px; background: #000; color: var(--fg);
+     cursor: pointer; }
+.kk { cursor: pointer; white-space: nowrap; }
+.kk.on .k { background: var(--green); color: #000; }
+.credit { color: #222; text-decoration: none; }
+.credit:hover { text-decoration: underline; }
+.credit-foot { padding: 4px 8px 10px; color: var(--dim); }
+.credit-foot a { color: var(--cyan); }
+/* link cells carry both renderings; desktop shows the full URL */
+.short { display: none; }
+.sess { font-weight: 700; color: #000; }
+.sess.tick { animation: sesstick .5s ease-out; }
+@keyframes sesstick { from { background: var(--green); } to { } }
+
+/* the big-fill line: full width, inverse, like ">> CINEMA on dexscreener: …" */
+.callout { padding: 1px 8px; font-weight: 700; white-space: nowrap; overflow: hidden;
+           animation: co 2.4s ease forwards; }
+.callout.buy { background: var(--green); color: #000; }
+.callout.sell { background: var(--red); color: #000; }
+.callout[hidden] { display: none; }
+@keyframes co { 0% { opacity: 0; } 8% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+
+/* readout: key value  key value … */
+.ro { padding: 6px 8px 4px; color: var(--green); }
+.ro .h { color: var(--fg); font-weight: 700; }
+.ro .d { color: var(--dim); }
+.ro .w { color: var(--fg); }
+.ro .big { font-weight: 700; color: var(--green-hi); }
+.ro .neg { color: var(--red); }
+.ro .meter { color: var(--green); letter-spacing: -1px; }
+.ro .meter i { color: var(--dimmer); font-style: normal; }
+.ro .live::before { content: "● "; color: var(--green); animation: pulse 2s infinite; }
+.ro .warn::before { content: "● "; color: var(--yellow); }
+.ro .down::before { content: "● "; color: var(--red); }
+@keyframes pulse { 50% { opacity: .25; } }
+.foot { color: var(--dimmer); }
+.cur { animation: blink .9s step-end infinite; color: var(--green); }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* section title: bold cyan caps, like LIVE / PAPER */
+.sec { padding: 10px 8px 2px; color: var(--cyan); font-weight: 700; display: flex;
+       align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.secn { color: var(--dimmer); font-weight: 400; }
+.tools { margin-left: auto; font-weight: 400; display: flex; gap: 10px; align-items: center; }
+.tab { cursor: pointer; color: var(--dimmer); }
+.tab.on { color: var(--cyan); }
+.tab:hover { color: var(--fg); }
+
+input, select { font: inherit; color: var(--fg); background: #000; border: 1px solid var(--dimmer);
+  padding: 0 4px; border-radius: 0; }
+input::placeholder { color: var(--dimmer); }
+select { color: var(--dim); }
+.chk { color: var(--dim); font-weight: 400; }
+
+/* tables: aligned text, a header line, nothing else */
+.tw { overflow-x: auto; }
+.tw.short { max-height: 320px; overflow-y: auto; }
+table.t { border-collapse: collapse; white-space: nowrap; }
+table.t th { text-align: left; font-weight: 400; color: var(--fg); padding: 2px 8px; }
+/* the tape is page-height, so a sticky header there never sticks and only costs */
+#tape-table th { position: static; }
+table.t td { padding: 0 8px; color: var(--green); }
+table.t th.n, table.t td.n { text-align: right; }
+table.t tbody tr:hover td { background: #101010; }
+.tw.short table.t th { position: sticky; top: 0; background: #000; }
+
+tr.sell { color: var(--red); }
+tr.buy { color: var(--green); }
+tr.sell td, tr.buy td { color: inherit; }
+/* these must outrank the row-level colour (tr.buy td { color: inherit }) */
+table.t td.u, table.t td.u a { color: var(--cyan); }
+table.t td.d, .d { color: var(--dim); }
+.sym { font-weight: 700; }
+.stk, .newpos { color: var(--magenta); font-size: 10px; }
+.flag { color: var(--dim); font-size: 10px; }          /* low-key: dim, small, no colour */
+tr.sus td { opacity: .62; }                              /* the real buys keep the light */
+tr.sus td.u a { opacity: 1; }
+.who { cursor: pointer; }
+.who:hover { text-decoration: underline; color: var(--fg); }
+.est { color: var(--dim); }
+
+/* size: big fills brighten and embolden; the biggest get a highlight bar */
+tr.sz2 td.size { font-weight: 700; }
+tr.sz3 td { font-weight: 700; }
+tr.sz3.buy { color: var(--green-hi); }
+tr.sz3.sell { color: var(--red-hi); }
+tr.sz4 td { font-weight: 700; }
+tr.sz4.buy { color: var(--green-hi); }
+tr.sz4.sell { color: var(--red-hi); }
+tr.sz4.buy td { background: #062a06; }
+tr.sz4.sell td { background: #2e0808; }
+/* the whole row inverts on arrival -- animated on the <tr> itself, ONE
+   animation per row; eleven animated cells per row was what melted Safari */
+tr.new.buy { animation: fb 1.1s ease-out; }
+tr.new.sell { animation: fs 1.1s ease-out; }
+@keyframes fb { from { background: var(--green); color: #000; } to { } }
+@keyframes fs { from { background: var(--red); color: #000; } to { } }
+@media (prefers-reduced-motion: reduce) { tr.new td { animation: none !important; } }
+
+.empty { padding: 6px 8px; color: var(--dimmer); }
+.chain { white-space: nowrap; }
+.chain .lead { color: var(--magenta); }
+.chain .ar { color: var(--dimmer); }
+
+/* modal: same idiom, just a black box with a border */
+.modal { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.9);
+         display: flex; align-items: flex-start; justify-content: center; padding: 24px 8px; overflow-y: auto; }
+.modal[hidden] { display: none; }
+.modal-box { background: #000; border: 1px solid var(--dim); width: min(1200px, 100%); position: relative; padding-bottom: 8px; }
+.modal-close { position: absolute; top: 4px; right: 8px; background: none; border: 0;
+               color: var(--dim); font: inherit; cursor: pointer; }
+.modal-close:hover { color: var(--fg); }
+.mhead { padding: 8px; }
+.mhead h3 { margin: 0; font-size: 14px; color: var(--cyan); }
+.mtitle { padding: 10px 8px 2px; color: var(--cyan); font-weight: 700; }
+.curve { display: block; width: 100%; height: 80px; padding: 0 8px; }
+
+/* ---------------------------------------------------------- phones */
+@media (max-width: 760px) {
+  html, body { font-size: 11.5px; }
+  .bar { flex-wrap: wrap; white-space: normal; padding: 3px 8px; gap: 6px 12px; }
+  .credit { order: 3; flex-basis: 100%; }
+  .bar-keys { order: 4; flex-basis: 100%; margin-left: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .bar-keys .k { display: none; }                 /* keyboard hints mean nothing on a phone */
+  .kk { padding: 2px 8px; border: 1px solid #000; }
+  .kk.on { background: var(--green); }
+  .kk.desk { display: none; }                     /* "/" focuses a keyboard filter */
+  .m-hide { display: none !important; }           /* columns that don't earn their width */
+  .full { display: none; }                        /* full URLs collapse to short labels */
+  .short { display: inline; }
+  .ro { font-size: 11px; }
+  .sec { gap: 6px; }
+  .tools { margin-left: 0; flex-basis: 100%; }
+  .tools input { width: 100%; min-width: 0; }
+  .tw { -webkit-overflow-scrolling: touch; }
+  table.t th, table.t td { padding: 1px 6px; }
+  .callout { font-size: 11px; }
+  .modal { padding: 8px 4px; }
+}
+
+/* ---------------------------------------------------- desktop: token view */
+.sym[data-token] { cursor: pointer; }
+.sym[data-token]:hover { text-decoration: underline; }
+.mhead .addr { color: var(--dim); }
+.mhead .mlinks a { margin-right: 12px; }
+.tfbar { padding-top: 6px; }
+.tfbar .tools .tab { padding: 0 4px; }
+.legend { padding: 0 8px; color: var(--dim); white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.legend.up { color: var(--green); }
+.legend.down { color: var(--red); }
+.chart { display: block; width: 100%; height: 380px; cursor: crosshair; touch-action: none; }
+.prog { padding: 4px 8px; color: var(--dim); }
+.tw.trades { max-height: 360px; overflow-y: auto; }
+.tw.trades table.t th { position: sticky; top: 0; background: #000; }
+.rpcform { padding: 8px; }
+.rpcrow { display: flex; gap: 10px; align-items: center; padding: 3px 0; }
+.rpcrow .k2 { width: 40px; color: var(--dim); }
+.rpcrow input { width: min(720px, 100%); }
+.btn { font: inherit; background: #000; color: var(--fg); border: 1px solid var(--dimmer); padding: 0 8px; cursor: pointer; }
+.btn:hover { border-color: var(--fg); }
+.mgrid { display: flex; flex-wrap: wrap; gap: 10px 24px; padding: 8px; }
+.mgrid .c .k { background: none; color: var(--dim); padding: 0; margin: 0; font-size: 10px; }
+.mgrid .c .v { font-weight: 700; }

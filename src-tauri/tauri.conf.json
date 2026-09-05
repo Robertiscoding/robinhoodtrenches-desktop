@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "robinhoodtrenches",
+  "version": "1.0.0",
+  "identifier": "com.degeneratedefi.robinhoodtrenches.desktop",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "robinhoodtrenches — live fomo.family trader tape",
+        "width": 1480,
+        "height": 940,
+        "minWidth": 720,
+        "minHeight": 480,
+        "resizable": true,
+        "center": true,
+        "theme": "Dark",
+        "backgroundColor": "#000000",
+        "acceptFirstMouse": true,
+        "zoomHotkeysEnabled": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app"],
+    "category": "Finance",
+    "shortDescription": "live fomo.family trader tape on Robinhood Chain",
+    "longDescription": "Live tape of every buy and sell by the top fomo.family traders on Robinhood Chain, with P/L and hit rates per trader. Desktop client for robinhoodtrenches.com.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "11.0"
+    }
+  }
+}
